@@ -27,7 +27,8 @@ class _AuthPageState extends State<AuthPage> {
   void _submitPhone() {
     if (_formKeyPhone.currentState!.validate()) {
       final phone = _phoneController.text.trim();
-      context.read<AuthCubit>().sendOtp(phone);
+      final roleId = 2; //Farmer roleId
+      context.read<AuthCubit>().sendOtp(phone, roleId: roleId);
     }
   }
 
@@ -49,10 +50,7 @@ class _AuthPageState extends State<AuthPage> {
               ),
             );
           } else if (state is AuthErrorState) {
-            SnackBarUtils.showError(
-              context,
-              message: state.message,
-            );
+            SnackBarUtils.showError(context, message: state.message);
           }
         },
         builder: (context, state) {
@@ -68,7 +66,7 @@ class _AuthPageState extends State<AuthPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Spacer(),
-                    
+
                     // Brand / Farming Logo Graphic
                     Center(
                       child: Container(
@@ -89,7 +87,7 @@ class _AuthPageState extends State<AuthPage> {
                       ),
                     ),
                     SizedBox(height: 24.h),
-                    
+
                     // Brand Name
                     Text(
                       'Kisan Market',
@@ -103,13 +101,10 @@ class _AuthPageState extends State<AuthPage> {
                     SizedBox(height: 8.h),
                     Text(
                       'Direct Farmer-to-Market Portal',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: Colors.grey,
-                      ),
+                      style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
-                    
+
                     const Spacer(),
 
                     // Phone form
@@ -128,7 +123,10 @@ class _AuthPageState extends State<AuthPage> {
                           SizedBox(height: 6.h),
                           Text(
                             'We will send a 6-digit OTP code to verify your account',
-                            style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.grey,
+                            ),
                           ),
                           SizedBox(height: 20.h),
 
@@ -137,7 +135,11 @@ class _AuthPageState extends State<AuthPage> {
                             controller: _phoneController,
                             keyboardType: TextInputType.phone,
                             maxLength: 10,
-                            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5,
+                            ),
                             validator: (value) {
                               if (value == null || value.trim().length < 10) {
                                 return 'Please enter a valid 10-digit number';
@@ -148,7 +150,10 @@ class _AuthPageState extends State<AuthPage> {
                               counterText: '',
                               hintText: '98765 43210',
                               prefixIcon: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 14.h,
+                                ),
                                 child: Text(
                                   '+91  | ',
                                   style: TextStyle(
@@ -162,11 +167,16 @@ class _AuthPageState extends State<AuthPage> {
                               fillColor: theme.cardTheme.color,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16.r),
-                                borderSide: BorderSide(color: Colors.grey.withAlpha(51)),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.withAlpha(51),
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16.r),
-                                borderSide: BorderSide(color: theme.primaryColor, width: 2.w),
+                                borderSide: BorderSide(
+                                  color: theme.primaryColor,
+                                  width: 2.w,
+                                ),
                               ),
                             ),
                           ),
@@ -188,11 +198,17 @@ class _AuthPageState extends State<AuthPage> {
                                 ? SizedBox(
                                     height: 24.h,
                                     width: 24.h,
-                                    child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                                    child: const CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
                                   )
                                 : Text(
                                     'Get OTP Code',
-                                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                           ),
                         ],

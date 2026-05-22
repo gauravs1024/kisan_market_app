@@ -4,36 +4,32 @@ import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/crop_entity.dart';
 import '../screens/crop_details_screen.dart';
 
-class CropCard extends StatefulWidget {
+class CropCard extends StatelessWidget {
   final CropEntity crop;
 
   const CropCard({super.key, required this.crop});
-
-  @override
-  State<CropCard> createState() => _CropCardState();
-}
-
-class _CropCardState extends State<CropCard> {
-  final PageController _pageController = PageController();
-  int _currentImageIndex = 0;
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final double minPrice = crop.getDisplayMinPrice();
+    final double maxPrice = crop.getDisplayMaxPrice();
+    final double discountPercent = maxPrice > 0 ? ((maxPrice - minPrice) / maxPrice * 100) : 0;
+    
+    // For subtitle we can use a hardcoded fallback or format based on entity data
+    // "Grade A | 500kg Bulk" as in image, let's adapt it to use entity data
+    final subtitleText = crop.localName.isNotEmpty 
+        ? '${crop.localName} | 1 ${crop.defaultUnit} Bulk' 
+        : 'Grade A | 1 ${crop.defaultUnit} Bulk';
+
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CropDetailsScreen(cropId: widget.crop.id),
+            builder: (context) => CropDetailsScreen(cropId: crop.id),
           ),
         );
       },
@@ -47,180 +43,166 @@ class _CropCardState extends State<CropCard> {
               ? BorderSide(color: AppColors.white.withAlpha(20), width: 1.w)
               : BorderSide(color: AppColors.lightGrey200, width: 1.w),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Image / PageView section
-            Expanded(
-              flex: 11,
-              child: Stack(
-                children: [
-                  widget.crop.imageUrls.isEmpty
-                      ? Container(
-                          color: AppColors.primary.withAlpha(26),
-                          child: Center(
-                            child: Icon(Icons.eco, size: 40.r, color: AppColors.primary),
+        margin: EdgeInsets.zero,
+        child: SizedBox(
+          height: 160.h,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Left side - Image with Badge
+              Expanded(
+                flex: 4,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    crop.imageUrls.isEmpty
+                        ? Container(
+                            color: AppColors.primary.withAlpha(26),
+                            child: Center(
+                              child: Icon(Icons.eco, size: 40.r, color: AppColors.primary),
+                            ),
+                          )
+                        : Image.network(
+                            crop.imageUrls.first,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              color: AppColors.primary.withAlpha(26),
+                              child: Center(
+                                child: Icon(Icons.broken_image, size: 36.r, color: AppColors.grey),
+                              ),
+                            ),
                           ),
-                        )
-                      : PageView.builder(
-                          controller: _pageController,
-                          onPageChanged: (idx) {
-                            setState(() {
-                              _currentImageIndex = idx;
-                            });
-                          },
-                          itemCount: widget.crop.imageUrls.length,
-                          itemBuilder: (context, index) {
-                            return Image.network(
-                              widget.crop.imageUrls[index],
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Container(
-                                color: AppColors.primary.withAlpha(26),
-                                child: Center(
-                                  child: Icon(Icons.broken_image, size: 36.r, color: AppColors.grey),
-                                ),
+                    // Discount Badge
+                    if (discountPercent > 0)
+                      Positioned(
+                        top: 12.h,
+                        left: 12.w,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFC62828), // Deep red color matching image
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Text(
+                            '-${discountPercent.toInt()}% BELOW MSP',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              
+              // Right side - Content
+              Expanded(
+                flex: 5,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 12.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        crop.name,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? AppColors.white : const Color(0xFF1B5E20), // Dark green color
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 4.h),
+                      
+                      // Subtitle
+                      Text(
+                        subtitleText,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: isDark ? Colors.grey[400] : Colors.grey[800],
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 12.h),
+                      
+                      // Price Row
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            '₹${minPrice.toStringAsFixed(0)}',
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? AppColors.white : Colors.black87,
+                            ),
+                          ),
+                          SizedBox(width: 6.w),
+                          Text(
+                            '₹${maxPrice.toStringAsFixed(0)} MSP',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.grey[600],
+                              decoration: TextDecoration.lineThrough,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const Spacer(),
+                      
+                      // Grab Deal Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 36.h,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CropDetailsScreen(cropId: crop.id),
                               ),
                             );
                           },
-                        ),
-                  // Carousel dots indicator if multiple images
-                  if (widget.crop.imageUrls.length > 1)
-                    Positioned(
-                      bottom: 8.h,
-                      left: 0,
-                      right: 0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          widget.crop.imageUrls.length,
-                          (index) => Container(
-                            width: 6.w,
-                            height: 6.h,
-                            margin: EdgeInsets.symmetric(horizontal: 2.w),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _currentImageIndex == index
-                                  ? AppColors.white
-                                  : AppColors.white.withAlpha(102),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFFB300), // Amber/Yellow matching image
+                            foregroundColor: Colors.black87,
+                            elevation: 0,
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            // Crop details section
-            Expanded(
-              flex: 10,
-              child: Padding(
-                padding: EdgeInsets.all(10.r),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Category Badge
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withAlpha(26),
-                        borderRadius: BorderRadius.circular(6.r),
-                      ),
-                      child: Text(
-                        widget.crop.categoryName,
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 9.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    // Name and local name
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.crop.name,
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (widget.crop.localName.isNotEmpty &&
-                            widget.crop.localName.toLowerCase() != widget.crop.name.toLowerCase())
-                          Text(
-                            '(${widget.crop.localName})',
-                            style: TextStyle(
-                              fontSize: 11.sp,
-                              color: AppColors.grey,
-                              fontStyle: FontStyle.italic,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                      ],
-                    ),
-                    const Spacer(),
-                    // Price Details & Standard Unit
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Price estimate
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              Icon(Icons.shopping_cart_outlined, size: 18.r),
+                              SizedBox(width: 6.w),
                               Text(
-                                'Est. Price',
-                                style: TextStyle(fontSize: 9.sp, color: AppColors.grey),
-                              ),
-                              SizedBox(height: 1.h),
-                              Text(
-                                '₹${widget.crop.getDisplayMinPrice().toStringAsFixed(0)} - ₹${widget.crop.getDisplayMaxPrice().toStringAsFixed(0)}',
+                                'Grab Deal',
                                 style: TextStyle(
-                                  fontSize: 11.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primaryDark,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Unit',
-                              style: TextStyle(fontSize: 9.sp, color: AppColors.grey),
-                            ),
-                            SizedBox(height: 2.h),
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
-                              decoration: BoxDecoration(
-                                color: isDark ? AppColors.white.withAlpha(26) : AppColors.lightGreyShade,
-                                borderRadius: BorderRadius.circular(4.r),
-                              ),
-                              child: Text(
-                                widget.crop.defaultUnit.toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 8.5.sp,
-                                  fontWeight: FontWeight.w900,
-                                  color: AppColors.secondary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

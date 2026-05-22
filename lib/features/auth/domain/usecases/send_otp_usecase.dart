@@ -16,5 +16,6 @@ class SendOtpUseCase implements UseCase<String?, SendOtpParams> {
 
 class SendOtpParams {
   final String phoneNumber;
-  const SendOtpParams({required this.phoneNumber});
+  final int roleId;
+  const SendOtpParams({required this.phoneNumber, required this.roleId});
 }

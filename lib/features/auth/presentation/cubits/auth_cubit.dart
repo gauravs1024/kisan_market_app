@@ -25,32 +25,42 @@ class AuthCubit extends Cubit<AuthState> {
     final result = await getCachedUserUseCase(const NoParams());
     result.fold(
       (failure) {
-        AppLogger.w('checkAuthStatus: No user cached. Emitting UnauthenticatedState');
+        AppLogger.w(
+          'checkAuthStatus: No user cached. Emitting UnauthenticatedState',
+        );
         emit(UnauthenticatedState());
       },
       (user) {
         if (user != null) {
-          AppLogger.i('checkAuthStatus: Cached session found for User ID: ${user.id}. Emitting AuthenticatedState');
+          AppLogger.i(
+            'checkAuthStatus: Cached session found for User ID: ${user.id}. Emitting AuthenticatedState',
+          );
           emit(AuthenticatedState(user: user));
         } else {
-          AppLogger.w('checkAuthStatus: User cached model was null. Emitting UnauthenticatedState');
+          AppLogger.w(
+            'checkAuthStatus: User cached model was null. Emitting UnauthenticatedState',
+          );
           emit(UnauthenticatedState());
         }
       },
     );
   }
 
-  Future<void> sendOtp(String phoneNumber) async {
+  Future<void> sendOtp(String phoneNumber, {int? roleId}) async {
     AppLogger.i('sendOtp: Requesting OTP for phone: $phoneNumber');
     emit(AuthLoading());
-    final result = await sendOtpUseCase(SendOtpParams(phoneNumber: phoneNumber));
+    final result = await sendOtpUseCase(
+      SendOtpParams(phoneNumber: phoneNumber, roleId: roleId ?? 2),
+    );
     result.fold(
       (failure) {
         AppLogger.e('sendOtp: Request failed: ${failure.message}');
         emit(AuthErrorState(message: failure.message));
       },
       (otpCode) {
-        AppLogger.i('sendOtp: OTP sent successfully. Received Test OTP: $otpCode');
+        AppLogger.i(
+          'sendOtp: OTP sent successfully. Received Test OTP: $otpCode',
+        );
         emit(OtpSentState(phoneNumber: phoneNumber, otpCode: otpCode));
       },
     );
@@ -59,17 +69,18 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> verifyOtp(String phoneNumber, String code) async {
     AppLogger.i('verifyOtp: Verifying OTP for phone: $phoneNumber');
     emit(AuthLoading());
-    final result = await verifyOtpUseCase(VerifyOtpParams(
-      phoneNumber: phoneNumber,
-      code: code,
-    ));
+    final result = await verifyOtpUseCase(
+      VerifyOtpParams(phoneNumber: phoneNumber, code: code),
+    );
     result.fold(
       (failure) {
         AppLogger.e('verifyOtp: Verification failed: ${failure.message}');
         emit(AuthErrorState(message: failure.message));
       },
       (user) {
-        AppLogger.i('verifyOtp: Verification succeeded. User ID: ${user.id}. Emitting AuthenticatedState');
+        AppLogger.i(
+          'verifyOtp: Verification succeeded. User ID: ${user.id}. Emitting AuthenticatedState',
+        );
         emit(AuthenticatedState(user: user));
       },
     );
@@ -90,10 +101,12 @@ class AuthCubit extends Cubit<AuthState> {
       },
     );
   }
-  
+
   // Helper method to go back from OTP input screen to phone entry screen
   void cancelOtpCodeSent() {
-    AppLogger.d('cancelOtpCodeSent: Canceling OTP code verification, returning to UnauthenticatedState');
+    AppLogger.d(
+      'cancelOtpCodeSent: Canceling OTP code verification, returning to UnauthenticatedState',
+    );
     emit(UnauthenticatedState());
   }
 }

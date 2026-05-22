@@ -13,12 +13,34 @@ class CropInitial extends CropState {}
 class CropLoading extends CropState {}
 
 class CropLoaded extends CropState {
-  final List<CropEntity> crops;
+  final List<CropEntity> allCrops;
+  final List<CropEntity> displayCrops;
+  final String selectedCategory;
+  final String searchQuery;
 
-  const CropLoaded(this.crops);
+  const CropLoaded({
+    required this.allCrops,
+    required this.displayCrops,
+    this.selectedCategory = 'All',
+    this.searchQuery = '',
+  });
+
+  CropLoaded copyWith({
+    List<CropEntity>? allCrops,
+    List<CropEntity>? displayCrops,
+    String? selectedCategory,
+    String? searchQuery,
+  }) {
+    return CropLoaded(
+      allCrops: allCrops ?? this.allCrops,
+      displayCrops: displayCrops ?? this.displayCrops,
+      selectedCategory: selectedCategory ?? this.selectedCategory,
+      searchQuery: searchQuery ?? this.searchQuery,
+    );
+  }
 
   @override
-  List<Object?> get props => [crops];
+  List<Object?> get props => [allCrops, displayCrops, selectedCategory, searchQuery];
 }
 
 class CropError extends CropState {

@@ -25,8 +25,6 @@ class _CropListScreenState extends State<CropListScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   late AnimationController _shimmerController;
-  String _searchQuery = '';
-  String _selectedCategory = 'All';
 
   @override
   void initState() {
@@ -54,36 +52,14 @@ class _CropListScreenState extends State<CropListScreen>
 
     return BlocBuilder<CropCubit, CropState>(
       builder: (context, state) {
-        List<CropEntity> allCrops = [];
-        List<String> categories = ['All'];
         List<CropEntity> displayCrops = [];
+        String selectedCategory = 'All';
+        String searchQuery = '';
 
         if (state is CropLoaded) {
-          allCrops = state.crops;
-
-          // Get unique categories dynamically
-          final uniqueCats = allCrops
-              .map((c) => c.categoryName)
-              .toSet()
-              .toList();
-          categories.addAll(uniqueCats);
-
-          displayCrops = allCrops.where((crop) {
-            // Category filter
-            final matchesCategory =
-                _selectedCategory == 'All' ||
-                crop.categoryName.toLowerCase() ==
-                    _selectedCategory.toLowerCase();
-
-            // Search text filter
-            final query = _searchQuery.toLowerCase();
-            final matchesSearch =
-                crop.name.toLowerCase().contains(query) ||
-                crop.localName.toLowerCase().contains(query) ||
-                crop.categoryName.toLowerCase().contains(query);
-
-            return matchesCategory && matchesSearch;
-          }).toList();
+          displayCrops = state.displayCrops;
+          selectedCategory = state.selectedCategory;
+          searchQuery = state.searchQuery;
         }
 
         return Scaffold(
@@ -156,21 +132,17 @@ class _CropListScreenState extends State<CropListScreen>
                         child: TextField(
                           controller: _searchController,
                           onChanged: (val) {
-                            setState(() {
-                              _searchQuery = val;
-                            });
+                            context.read<CropCubit>().filterCrops(query: val);
                           },
                           decoration: InputDecoration(
                             hintText: 'Search crops or local names...',
                             prefixIcon: Icon(Icons.search, size: 24.r),
-                            suffixIcon: _searchQuery.isNotEmpty
+                            suffixIcon: searchQuery.isNotEmpty
                                 ? IconButton(
                                     icon: Icon(Icons.clear, size: 20.r),
                                     onPressed: () {
                                       _searchController.clear();
-                                      setState(() {
-                                        _searchQuery = '';
-                                      });
+                                      context.read<CropCubit>().filterCrops(query: '');
                                     },
                                   )
                                 : null,
@@ -187,12 +159,10 @@ class _CropListScreenState extends State<CropListScreen>
                     ),
                     // Redesigned Category List with images
                     CropCategoryListView(
-                      selectedCategory: _selectedCategory,
+                      selectedCategory: selectedCategory,
                       shimmerAnimation: _shimmerController,
                       onCategorySelected: (category) {
-                        setState(() {
-                          _selectedCategory = category;
-                        });
+                        context.read<CropCubit>().filterCrops(category: category);
                       },
                     ),
                     SizedBox(height: 8.h),
@@ -213,15 +183,10 @@ class _CropListScreenState extends State<CropListScreen>
                         text: 'No crops found matching your filters',
                       );
                     }
-                    return GridView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12.w,
-                        mainAxisSpacing: 12.h,
-                        childAspectRatio: 0.69,
-                      ),
+                    return ListView.separated(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                       itemCount: displayCrops.length,
+                      separatorBuilder: (context, index) => SizedBox(height: 12.h),
                       itemBuilder: (context, index) {
                         return CropCard(crop: displayCrops[index]);
                       },
