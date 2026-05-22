@@ -132,8 +132,8 @@ class CropCategoryListView extends StatelessWidget {
                       children: [
                         // Image/Icon Container
                         Container(
-                          width: 54.w,
-                          height: 54.h,
+                          width: 54.r,
+                          height: 54.r,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
@@ -243,8 +243,8 @@ class CropCategoryListView extends StatelessWidget {
                   child: Column(
                     children: [
                       Container(
-                        width: 54.w,
-                        height: 54.h,
+                        width: 54.r,
+                        height: 54.r,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.grey500.withAlpha(77),
