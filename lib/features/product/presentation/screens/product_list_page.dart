@@ -6,6 +6,7 @@ import '../cubits/product_cubit.dart';
 import '../cubits/product_state.dart';
 import '../widgets/add_product_dialog.dart';
 import '../widgets/product_card.dart';
+import '../../../../core/utils/snackbar_utils.dart';
 
 class ProductListPage extends StatefulWidget {
   final VoidCallback onOpenDrawer;
@@ -50,22 +51,14 @@ class _ProductListPageState extends State<ProductListPage> with SingleTickerProv
     return BlocConsumer<ProductCubit, ProductState>(
       listener: (context, state) {
         if (state is ProductAdded) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${state.newProduct.name} successfully listed!'),
-              backgroundColor: theme.primaryColor,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-            ),
+          SnackBarUtils.showSuccess(
+            context,
+            message: '${state.newProduct.name} successfully listed!',
           );
         } else if (state is ProductError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${state.message}'),
-              backgroundColor: theme.colorScheme.error,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-            ),
+          SnackBarUtils.showError(
+            context,
+            message: 'Error: ${state.message}',
           );
         }
       },
@@ -551,12 +544,9 @@ class _ProductListPageState extends State<ProductListPage> with SingleTickerProv
                       onPressed: () {
                         // Action to buy or contact farmer
                         Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Contacting ${product.farmerName}...'),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-                          ),
+                        SnackBarUtils.showInfo(
+                          context,
+                          message: 'Contacting ${product.farmerName}...',
                         );
                       },
                       style: ElevatedButton.styleFrom(

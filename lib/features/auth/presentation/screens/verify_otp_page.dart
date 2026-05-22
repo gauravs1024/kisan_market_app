@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../cubits/auth_cubit.dart';
 import '../cubits/auth_state.dart';
+import '../../../../core/utils/snackbar_utils.dart';
 
 class VerifyOtpPage extends StatefulWidget {
   final String phoneNumber;
@@ -92,24 +93,16 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
           if (state is AuthenticatedState) {
             // Global listener in main.dart handles clean routing via pushAndRemoveUntil
           } else if (state is AuthErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: theme.colorScheme.error,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-              ),
+            SnackBarUtils.showError(
+              context,
+              message: state.message,
             );
           } else if (state is OtpSentState) {
             // Restart resend timer if code is resent
             _startResendTimer();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('OTP code resent successfully'),
-                backgroundColor: theme.primaryColor,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-              ),
+            SnackBarUtils.showSuccess(
+              context,
+              message: 'OTP code resent successfully',
             );
           }
         },

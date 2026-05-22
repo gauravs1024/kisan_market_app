@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/routes/route_transitions.dart';
 import '../cubits/auth_cubit.dart';
 import '../cubits/auth_state.dart';
+import '../../../../core/utils/snackbar_utils.dart';
 import 'verify_otp_page.dart';
 
 class AuthPage extends StatefulWidget {
@@ -48,13 +49,9 @@ class _AuthPageState extends State<AuthPage> {
               ),
             );
           } else if (state is AuthErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: theme.colorScheme.error,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-              ),
+            SnackBarUtils.showError(
+              context,
+              message: state.message,
             );
           }
         },

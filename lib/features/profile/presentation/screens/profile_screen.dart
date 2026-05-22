@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/widgets/loading_overlay.dart';
 import '../../../../core/utils/image_picker_helper.dart';
+import '../../../../core/utils/snackbar_utils.dart';
 import '../../../../main.dart';
 import '../../../../injection_container.dart' as di;
 import '../../data/data_sources/location_service.dart';
@@ -99,19 +100,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
 
         if (state is ProfileUpdated) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.check_circle_outline, color: Colors.white, size: 20.r),
-                  SizedBox(width: 8.w),
-                  const Text('Profile updated successfully!'),
-                ],
-              ),
-              backgroundColor: Colors.green.shade600,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-            ),
+          SnackBarUtils.showSuccess(
+            context,
+            message: 'Profile updated successfully!',
           );
           setState(() {
             _isEditing = false;
@@ -120,19 +111,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         } else if (state is ProfileLoaded) {
           _populateFields(state.profile);
         } else if (state is ProfileError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.error_outline, color: Colors.white, size: 20.r),
-                  SizedBox(width: 8.w),
-                  Expanded(child: Text(state.message)),
-                ],
-              ),
-              backgroundColor: Colors.red.shade600,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-            ),
+          SnackBarUtils.showError(
+            context,
+            message: state.message,
           );
         }
       },
@@ -567,8 +548,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showStatePicker() {
     if (_selectedCountryId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a country first')),
+      SnackBarUtils.showInfo(
+        context,
+        message: 'Please select a country first',
       );
       return;
     }
