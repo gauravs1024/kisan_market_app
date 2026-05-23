@@ -18,10 +18,10 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<Either<Failure, String?>> sendOtp(String phoneNumber) async {
+  Future<Either<Failure, String?>> sendOtp(String phoneNumber, {int? roleId}) async {
     try {
       AppLogger.d('Repository.sendOtp: Sending OTP request to remote for $phoneNumber');
-      final otp = await remoteDataSource.sendOtp(phoneNumber);
+      final otp = await remoteDataSource.sendOtp(phoneNumber, roleId: roleId);
       AppLogger.d('Repository.sendOtp: OTP request succeeded');
       return Right(otp);
     } on ServerException catch (e) {

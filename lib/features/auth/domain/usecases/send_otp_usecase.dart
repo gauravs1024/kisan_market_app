@@ -10,7 +10,7 @@ class SendOtpUseCase implements UseCase<String?, SendOtpParams> {
 
   @override
   Future<Either<Failure, String?>> call(SendOtpParams params) {
-    return repository.sendOtp(params.phoneNumber);
+    return repository.sendOtp(params.phoneNumber, roleId: params.roleId);
   }
 }
 

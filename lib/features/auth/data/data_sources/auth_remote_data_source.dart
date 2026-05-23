@@ -5,7 +5,7 @@ import '../../../../core/network/api_client.dart';
 import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<String?> sendOtp(String phoneNumber);
+  Future<String?> sendOtp(String phoneNumber, {int? roleId});
   Future<UserModel> verifyOtp(String phoneNumber, String code);
   Future<void> logout();
 }
@@ -16,13 +16,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl(this.apiClient);
 
   @override
-  Future<String?> sendOtp(String phoneNumber) async {
+  Future<String?> sendOtp(String phoneNumber, {int? roleId}) async {
     try {
       final response = await apiClient.post(
         ApiEndpoints.sendOtp,
         data: {
           'phone': phoneNumber,
-          'roleId': 2,
+          if (roleId != null) 'roleId': roleId,
         },
       );
       
