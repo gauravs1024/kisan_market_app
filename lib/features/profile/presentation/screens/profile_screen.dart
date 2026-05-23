@@ -462,15 +462,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                   decoration: BoxDecoration(
-                    color: theme.primaryColor.withAlpha(31),
+                    color: (profile.accountStatus == 'ACTIVE' ? Colors.green : Colors.orange).withAlpha(31),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
-                    profile.role.replaceAll('ROLE_', ''),
+                    (profile.accountStatus ?? 'ACTIVE').toUpperCase(),
                     style: TextStyle(
                       fontSize: 11.sp,
                       fontWeight: FontWeight.w600,
-                      color: theme.primaryColor,
+                      color: (profile.accountStatus == 'ACTIVE' ? Colors.green : Colors.orange),
                     ),
                   ),
                 ),
