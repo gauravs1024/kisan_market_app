@@ -74,7 +74,8 @@ class AppDrawer extends StatelessWidget {
               ),
               title: Text(isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'),
               onTap: () {
-                Navigator.pop(context);
+                final navigator = Navigator.of(context);
+                navigator.pop();
                 onThemeToggle();
               },
             ),
@@ -84,9 +85,9 @@ class AppDrawer extends StatelessWidget {
               leading: Icon(Icons.person_rounded, color: AppColors.primary),
               title: const Text('Profile'),
               onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                navigator.push(
                   MaterialPageRoute(
                     builder: (_) => BlocProvider<ProfileCubit>(
                       create: (_) => di.sl<ProfileCubit>()..fetchProfile(),
@@ -102,9 +103,9 @@ class AppDrawer extends StatelessWidget {
               leading: Icon(Icons.privacy_tip_rounded, color: AppColors.primary),
               title: const Text('Privacy Policy'),
               onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                navigator.push(
                   MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
                 );
               },
@@ -115,9 +116,10 @@ class AppDrawer extends StatelessWidget {
               leading: Icon(Icons.info_outline_rounded, color: AppColors.primary),
               title: const Text('About'),
               onTap: () {
-                Navigator.pop(context);
+                final navigator = Navigator.of(context);
+                navigator.pop();
                 showAboutDialog(
-                  context: context,
+                  context: navigator.context,
                   applicationName: 'Kisan Market',
                   applicationVersion: '1.0.0',
                   applicationLegalese: '© 2026 Kisan Market. All rights reserved.',
@@ -132,7 +134,9 @@ class AppDrawer extends StatelessWidget {
               leading: const Icon(Icons.logout_rounded, color: AppColors.error),
               title: const Text('Logout', style: TextStyle(color: AppColors.error)),
               onTap: () {
-                Navigator.pop(context);
+                final authCubit = context.read<AuthCubit>();
+                final navigator = Navigator.of(context);
+                
                 showDialog(
                   context: context,
                   builder: (dialogContext) {
@@ -146,8 +150,9 @@ class AppDrawer extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(dialogContext);
-                            context.read<AuthCubit>().logout();
+                            Navigator.pop(dialogContext); // Close dialog
+                            navigator.pop(); // Close drawer
+                            authCubit.logout(); // Trigger logout
                           },
                           child: const Text('Logout', style: TextStyle(color: AppColors.error)),
                         ),

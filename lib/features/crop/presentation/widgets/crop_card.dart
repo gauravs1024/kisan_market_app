@@ -20,9 +20,15 @@ class CropCard extends StatelessWidget {
     
     // For subtitle we can use a hardcoded fallback or format based on entity data
     // "Grade A | 500kg Bulk" as in image, let's adapt it to use entity data
-    final subtitleText = crop.localName.isNotEmpty 
+    String subtitleText = crop.localName.isNotEmpty 
         ? '${crop.localName} | 1 ${crop.defaultUnit} Bulk' 
         : 'Grade A | 1 ${crop.defaultUnit} Bulk';
+        
+    if (crop.farmer != null) {
+      final farmer = crop.farmer!;
+      final location = [farmer.city, farmer.state].where((e) => e != null && e.isNotEmpty).join(', ');
+      subtitleText = 'By ${farmer.fullName}${location.isNotEmpty ? ' • $location' : ''}';
+    }
 
     return InkWell(
       onTap: () {

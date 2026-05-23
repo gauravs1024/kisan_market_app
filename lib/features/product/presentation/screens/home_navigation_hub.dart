@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../common/presentation/widgets/app_drawer.dart';
 import '../../../crop/presentation/screens/crop_list_screen.dart';
-import '../../../profile/presentation/cubits/profile_cubit.dart';
-import '../../../profile/presentation/screens/profile_screen.dart';
-import '../../../../injection_container.dart' as di;
 import 'product_list_page.dart';
 
 class HomeNavigationHub extends StatefulWidget {
@@ -33,10 +29,6 @@ class _HomeNavigationHubState extends State<HomeNavigationHub> {
     _screens = [
       ProductListPage(onOpenDrawer: _openDrawer),
       CropListScreen(onOpenDrawer: _openDrawer),
-      BlocProvider<ProfileCubit>(
-        create: (_) => di.sl<ProfileCubit>()..fetchProfile(),
-        child: const ProfileScreen(),
-      ),
     ];
   }
 
@@ -83,11 +75,6 @@ class _HomeNavigationHubState extends State<HomeNavigationHub> {
               icon: Icon(Icons.eco_outlined),
               activeIcon: Icon(Icons.eco),
               label: 'Crop Catalog',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Profile',
             ),
           ],
         ),

@@ -1,5 +1,41 @@
 import '../../domain/entities/crop_entity.dart';
 
+class CropFarmerModel extends CropFarmerEntity {
+  const CropFarmerModel({
+    required super.id,
+    required super.fullName,
+    super.profileImageUrl,
+    super.phone,
+    super.city,
+    super.state,
+    super.address,
+  });
+
+  factory CropFarmerModel.fromJson(Map<String, dynamic> json) {
+    return CropFarmerModel(
+      id: json['id'] as int,
+      fullName: (json['fullName'] ?? '') as String,
+      profileImageUrl: json['profileImageUrl'] as String?,
+      phone: json['phone'] as String?,
+      city: json['city'] as String?,
+      state: json['state'] as String?,
+      address: json['address'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fullName': fullName,
+      'profileImageUrl': profileImageUrl,
+      'phone': phone,
+      'city': city,
+      'state': state,
+      'address': address,
+    };
+  }
+}
+
 class CropModel extends CropEntity {
   const CropModel({
     required super.id,
@@ -9,8 +45,9 @@ class CropModel extends CropEntity {
     required super.categoryName,
     required super.defaultUnit,
     required super.imageUrls,
-    super.minPrice,
-    super.maxPrice,
+    super.price,
+    super.msp,
+    super.farmer,
   });
 
   factory CropModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +60,11 @@ class CropModel extends CropEntity {
       imgs = [json['imageUrl'].toString()];
     }
 
+    CropFarmerModel? parsedFarmer;
+    if (json['farmer'] != null) {
+      parsedFarmer = CropFarmerModel.fromJson(json['farmer'] as Map<String, dynamic>);
+    }
+
     return CropModel(
       id: json['id'] as int,
       name: (json['name'] ?? '') as String,
@@ -31,8 +73,9 @@ class CropModel extends CropEntity {
       categoryName: (json['categoryName'] ?? '') as String,
       defaultUnit: (json['defaultUnit'] ?? '') as String,
       imageUrls: imgs,
-      minPrice: json['minPrice'] != null ? (json['minPrice'] as num).toDouble() : null,
-      maxPrice: json['maxPrice'] != null ? (json['maxPrice'] as num).toDouble() : null,
+      price: json['price'] != null ? (json['price'] as num).toDouble() : null,
+      msp: json['msp'] != null ? (json['msp'] as num).toDouble() : null,
+      farmer: parsedFarmer,
     );
   }
 
@@ -45,8 +88,9 @@ class CropModel extends CropEntity {
       'categoryName': categoryName,
       'defaultUnit': defaultUnit,
       'imageUrls': imageUrls,
-      'minPrice': minPrice,
-      'maxPrice': maxPrice,
+      'price': price,
+      'msp': msp,
+      'farmer': farmer != null ? (farmer as CropFarmerModel).toJson() : null,
     };
   }
 }

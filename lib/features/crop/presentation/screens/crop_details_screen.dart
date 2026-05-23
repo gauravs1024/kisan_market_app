@@ -309,6 +309,105 @@ class _CropDetailsScreenState extends State<CropDetailsScreen> {
                           ),
                           SizedBox(height: 20.h),
 
+                          // Farmer Details Card
+                          if (crop.farmer != null) ...[
+                            Text(
+                              'Farmer Details',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.sp,
+                              ),
+                            ),
+                            SizedBox(height: 10.h),
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(16.r),
+                              decoration: BoxDecoration(
+                                color: theme.cardTheme.color,
+                                borderRadius: BorderRadius.circular(20.r),
+                                border: Border.all(
+                                  color: isDark ? AppColors.white.withAlpha(20) : AppColors.lightGrey200,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 30.r,
+                                    backgroundColor: AppColors.primary.withAlpha(26),
+                                    backgroundImage: crop.farmer!.profileImageUrl != null
+                                        ? NetworkImage(crop.farmer!.profileImageUrl!)
+                                        : null,
+                                    child: crop.farmer!.profileImageUrl == null
+                                        ? Icon(Icons.person, color: AppColors.primary, size: 30.r)
+                                        : null,
+                                  ),
+                                  SizedBox(width: 16.w),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          crop.farmer!.fullName,
+                                          style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        if (crop.farmer!.city != null || crop.farmer!.state != null) ...[
+                                          SizedBox(height: 4.h),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.location_on_outlined, size: 14.r, color: AppColors.grey),
+                                              SizedBox(width: 4.w),
+                                              Expanded(
+                                                child: Text(
+                                                  [crop.farmer!.city, crop.farmer!.state]
+                                                      .where((e) => e != null && e.isNotEmpty)
+                                                      .join(', '),
+                                                  style: TextStyle(
+                                                    fontSize: 13.sp,
+                                                    color: AppColors.grey,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                        if (crop.farmer!.phone != null) ...[
+                                          SizedBox(height: 4.h),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.phone_outlined, size: 14.r, color: AppColors.grey),
+                                              SizedBox(width: 4.w),
+                                              Text(
+                                                crop.farmer!.phone!,
+                                                style: TextStyle(
+                                                  fontSize: 13.sp,
+                                                  color: AppColors.grey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      // Call logic could be added here
+                                    },
+                                    icon: CircleAvatar(
+                                      backgroundColor: AppColors.primary,
+                                      radius: 20.r,
+                                      child: Icon(Icons.call, color: AppColors.white, size: 20.r),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                          ],
+
                           // Description / Detailed Information placeholder
                           Text(
                             'About this crop',

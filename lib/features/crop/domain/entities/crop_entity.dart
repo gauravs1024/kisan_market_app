@@ -1,5 +1,28 @@
 import 'package:equatable/equatable.dart';
 
+class CropFarmerEntity extends Equatable {
+  final int id;
+  final String fullName;
+  final String? profileImageUrl;
+  final String? phone;
+  final String? city;
+  final String? state;
+  final String? address;
+
+  const CropFarmerEntity({
+    required this.id,
+    required this.fullName,
+    this.profileImageUrl,
+    this.phone,
+    this.city,
+    this.state,
+    this.address,
+  });
+
+  @override
+  List<Object?> get props => [id, fullName, profileImageUrl, phone, city, state, address];
+}
+
 class CropEntity extends Equatable {
   final int id;
   final String name;
@@ -8,8 +31,9 @@ class CropEntity extends Equatable {
   final String categoryName;
   final String defaultUnit;
   final List<String> imageUrls;
-  final double? minPrice;
-  final double? maxPrice;
+  final double? price;
+  final double? msp;
+  final CropFarmerEntity? farmer;
 
   const CropEntity({
     required this.id,
@@ -19,18 +43,19 @@ class CropEntity extends Equatable {
     required this.categoryName,
     required this.defaultUnit,
     required this.imageUrls,
-    this.minPrice,
-    this.maxPrice,
+    this.price,
+    this.msp,
+    this.farmer,
   });
 
   double getDisplayMinPrice() {
-    if (minPrice != null) return minPrice!;
+    if (price != null) return price!;
     // Generate a consistent estimated min price based on id
     return 1500.0 + (id % 7) * 200.0;
   }
 
   double getDisplayMaxPrice() {
-    if (maxPrice != null) return maxPrice!;
+    if (msp != null) return msp!;
     // Generate a consistent estimated max price based on id
     return getDisplayMinPrice() + 300.0 + (id % 5) * 100.0;
   }
@@ -44,7 +69,8 @@ class CropEntity extends Equatable {
         categoryName,
         defaultUnit,
         imageUrls,
-        minPrice,
-        maxPrice,
+        price,
+        msp,
+        farmer,
       ];
 }

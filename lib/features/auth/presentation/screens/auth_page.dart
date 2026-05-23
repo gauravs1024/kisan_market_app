@@ -27,7 +27,7 @@ class _AuthPageState extends State<AuthPage> {
   void _submitPhone() {
     if (_formKeyPhone.currentState!.validate()) {
       final phone = _phoneController.text.trim();
-      final roleId = 2; //Farmer roleId
+      final roleId = 3; //Farmer roleId
       context.read<AuthCubit>().sendOtp(phone, roleId: roleId);
     }
   }

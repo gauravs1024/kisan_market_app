@@ -50,7 +50,7 @@ class AuthCubit extends Cubit<AuthState> {
     AppLogger.i('sendOtp: Requesting OTP for phone: $phoneNumber');
     emit(AuthLoading());
     final result = await sendOtpUseCase(
-      SendOtpParams(phoneNumber: phoneNumber, roleId: roleId ?? 2),
+      SendOtpParams(phoneNumber: phoneNumber, roleId: roleId ?? 3),
     );
     result.fold(
       (failure) {
